@@ -1,5 +1,4 @@
-name: Build HelloEfi
-
+name: UEFI Build
 on:
   push:
   pull_request:

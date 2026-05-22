@@ -1,4 +1,4 @@
-# HelloEfi
+# Uefi-Playground
 
 Minimal UEFI application written in C,
 bootable in QEMU using OVMF firmware.

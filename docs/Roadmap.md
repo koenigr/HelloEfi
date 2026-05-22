@@ -143,20 +143,6 @@ fake sensor
 Auch ohne echte Hardware.
 
 
-Projektname
-
-Nicht „HelloEfi“.
-
-Besser:
-
-tiny-uefi-loader
-qboot
-ember-efi
-microboot
-uefi-playground
-bootlab
-Zielversion
-Features
 
 Boots in QEMU
 eigener UEFI Bootscreen

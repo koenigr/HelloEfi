@@ -1,5 +1,4 @@
 name: UEFI Build
-
 on:
   push:
   pull_request:

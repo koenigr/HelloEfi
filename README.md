@@ -24,4 +24,12 @@ QEMU + OVMF
 	|
 UEFI Application
 
+# Dependencies
+
+Ubuntu/Debian:
+```bash
+sudo apt install ovmf qemu-system-x86 gnu-efi 
+```
+
 # Build Instructions
+

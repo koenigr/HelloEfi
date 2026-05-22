@@ -1,7 +1,7 @@
 ARCH            = $(shell uname -m | sed s,i[3456789]86,ia32,)
 
-OBJS            = helloEfiApplication.o helloEfiBoot.o
-TARGET          = helloEfiApplication.efi helloEfiBoot.efi
+OBJS            = build/helloEfiApplication.o build/helloEfiBoot.o
+TARGET          = build/helloEfiApplication.efi build/helloEfiBoot.efi
 
 EFIINC          = /usr/include/efi
 EFIINCS         = -I$(EFIINC) -I$(EFIINC)/$(ARCH) -I$(EFIINC)/protocol

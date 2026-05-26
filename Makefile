@@ -1,8 +1,11 @@
 ARCH            = $(shell uname -m | sed s,i[3456789]86,ia32,)
 
-APP_OBJS        = build/helloEfiApplication.o
-BOOT_OBJS				= build/helloEfiBoot.o
-TARGET          = build/helloEfiApplication.efi build/helloEfiBoot.efi
+APPS = hello memory_map graphics filesystem
+BOOT = template linux_loader
+
+TARGETS					= \
+			$(addprefix build/apps/, $(addsuffix .efi, $(APPS))) \
+			$(addprefix build/boot/, $(addsuffix .efi, $(BOOT)))
 
 EFIINC          = /usr/include/efi
 EFIINCS         = -I$(EFIINC) -I$(EFIINC)/$(ARCH) -I$(EFIINC)/protocol
@@ -24,35 +27,33 @@ OVMF_CODE				= /usr/share/OVMF/OVMF_CODE.fd
 OVMF_VARS				= firmware/OVMF_VARS.fd
 
 
+all: $(TARGETS)
 
-all: $(TARGET)
-
-build/%.o: src/%.c
-	mkdir -p build
+build/apps/%.o: src/apps/%/main.c
+	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-build/helloEfiApplication.so: $(APP_OBJS)
-	ld $(LDFLAGS) $(APP_OBJS) -o $@ -lefi -lgnuefi
+build/boot/%.o: src/boot/%/main.c
+	mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-build/helloEfiBoot.so: $(BOOT_OBJS)
-	ld $(LDFLAGS) $(BOOT_OBJS) -o $@ -lefi -lgnuefi
+build/%.so: build/%.o
+	ld $(LDFLAGS) $^ -o $@ -lefi -lgnuefi
 
 build/%.efi: build/%.so
 	objcopy -j .text -j .sdata -j .data -j .dynamic \
 		-j .dynsym  -j .rel -j .rela -j .reloc \
-		--target=efi-app-$(ARCH) $^ $@
+		--target=efi-app-$(ARCH) $< $@
 
 clean:
-	rm -f *.o
-	rm -f *.so
-	rm -f *.efi
+	rm -rf build
 	rm -f hda-contents/*.efi
 
 run: all
 	mkdir -p hda-contents/EFI/boot
 
-	cp build/helloEfiApplication.efi hda-contents/
-	cp build/helloEfiBoot.efi hda-contents/
+	cp build/apps/*.efi hda-contents/
+	cp build/boot/*.efi hda-contents/
 
 	#cp helloEfiApplication.efi hda-contents/EFI/boot/BOOT_X64.efi
 

@@ -3,7 +3,7 @@
 
 EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable) {
 	InitializeLib(ImageHandle, SystemTable);
-	Print(L"HelloEfi Application!\n");
+	Print(L"MemoryMap Viewer Application!\n");
 
 	return EFI_SUCCESS;
 }

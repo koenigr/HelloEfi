@@ -41,4 +41,12 @@ make run
 ```
 
 # UEFI Interactive Shell - commands
+Switch HD: ```fs0:```
+List files: ```ls```
+To leave shell: ```exit```
+
+
+# Applications
+## Hello
+Just a template how to create an application
 

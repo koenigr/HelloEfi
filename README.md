@@ -17,6 +17,9 @@ https://uefi.org
 https://wiki.osdev.org/UEFI
 https://sourceforge.net/projects/gnu-efi/
 
+Main Documentation:  
+https://uefi.org/sites/default/files/resources/UEFI_Spec_Final_2.11.pdf
+
 
 # Explanation Difference between Application and Bootable
 

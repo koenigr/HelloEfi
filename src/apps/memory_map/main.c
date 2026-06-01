@@ -25,8 +25,8 @@ CHAR16* MemoryTypeToStr(UINT32 Type) {
     }
 }
 
-EFI_STATUS PrintGroup(UINT32 Type, EFI_PHYSICAL_ADDRESS PhysicalStart, UINT64 NumberOfPages) {
-	UINT64 SizeBytes = NumberOfPages * 4096;
+void PrintGroup(UINT32 Type, EFI_PHYSICAL_ADDRESS PhysicalStart, UINT64 NumberOfPages) {
+	UINT64 SizeBytes = (UINT64) NumberOfPages * 4096;
 	UINT64 SizeKB = SizeBytes / 1024;
 	UINT64 SizeMB = SizeKB / 1024;
 
@@ -115,7 +115,12 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable
 		&DescriptorVersion
 	);
 
-	Print(L"MemoryMapSize: %d\n", MemoryMapSize);
+	if (EFI_ERROR(Status)) {
+    	Print(L"GetMemoryMap failed: %r\n", Status);
+    	return Status;
+	}
+
+	Print(L"MemoryMapSize: %lu\n", MemoryMapSize);
 
 	if (DescriptorSize == 0) {
     	Print(L"DescriptorSize is 0!\n");
@@ -131,6 +136,7 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable
 	EFI_MEMORY_TYPE currentType = 0;
 	UINT64 currentStart = 0;
 	UINT64 currentPages = 0;
+	UINT64 currentEnd;
 	BOOLEAN first = TRUE;
 
 	for (Desc = MemoryMap;
@@ -145,9 +151,11 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable
 			continue;
 		}
 
+		currentEnd = currentStart + currentPages * 4096;
+
 		BOOLEAN contiguous = 
 			(Desc->Type == currentType) &&
-			(Desc->PhysicalStart == currentStart + currentPages * 4096);
+			(Desc->PhysicalStart == currentEnd);
 
 		if (contiguous) {
 			currentPages += Desc->NumberOfPages;
@@ -162,12 +170,15 @@ EFI_STATUS EFIAPI efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable
 
 	PrintGroup(currentType, currentStart, currentPages);
 
-
-	UINTN Count = MemoryMapSize / DescriptorSize;
-
 	Print(L"MemoryMapSize: %lx\n", MemoryMapSize);
-	Print(L"DescriptorSize: %d\n", DescriptorSize);
-	Print(L"MapKey: %d\n", MapKey);
+	Print(L"DescriptorSize: %lu\n", DescriptorSize);
+	Print(L"MapKey: %lu\n", MapKey);
+
+	uefi_call_wrapper(
+    	SystemTable->BootServices->FreePool,
+    	1,
+    	MemoryMap
+	);
 
 	return EFI_SUCCESS;
 }
